@@ -7,7 +7,7 @@ use LWP::UserAgent;
 
 $VERSION = '1.0';
 
-sub new 
+sub new
 {
   my $class = shift;
   my %par = @_;
@@ -25,47 +25,47 @@ sub get
   my ($self, $domain) = @_;
   return unless defined $domain;
 
-	my ($res, $cont);
+  my ($res, $cont);
 
-	$domain =~ s/^\w+\.(.*?\.\w+)/$1/;
+  $domain =~ s/^\w+\.(.*?\.\w+)/$1/;
 
-	$res = $self->{ua}->get("http://www.alexa.com/data/details/main/$domain");
-  if (!$res->is_success) { 
-  	return $res->status_line; 
+  $res = $self->{ua}->get("http://www.alexa.com/data/details/main/$domain");
+  if (!$res->is_success) {
+    return $res->status_line;
   }
 
-	$cont = $res->content; $cont =~ s/[\r\n]//g;
+  $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-	if ($cont =~ /traffic rank of:<\/span>&nbsp;No Data/i) {
-		return "No Data"; 
-	}
-
-	$res = $self->{ua}->get("http://client.alexa.com/common/css/scramble.css");
-  if (!$res->is_success) { 
-  	return $res->status_line; 
+  if ($cont =~ /traffic rank of:<\/span>&nbsp;No Data/i) {
+    return "No Data";
   }
 
-	my $cont_css = $res->content; $cont_css =~ s/[\r\n]//g;
+  $res = $self->{ua}->get("http://client.alexa.com/common/css/scramble.css");
+  if (!$res->is_success) {
+    return $res->status_line;
+  }
 
-	my ($rank) = $cont =~ /traffic rank of:<\/span>&nbsp;<a href="\/data\/details\/traffic_details\/$domain">(.*?)<\/a>/i; 
-  	 $rank =~ s|<!--.*?-->||g;
+  my $cont_css = $res->content; $cont_css =~ s/[\r\n]//g;
+
+  my ($rank) = $cont =~ /traffic rank of:<\/span>&nbsp;<a href="\/data\/details\/traffic_details\/$domain">(.*?)<\/a>/i;
+     $rank =~ s|<!--.*?-->||g;
      $rank =~ s|<span class="descBold">||g;
      $rank =~ s|</span>|</span>\n|gi;
-	my @spans = split(/\n/, $rank); $rank='';
+  my @spans = split(/\n/, $rank); $rank='';
 
-	foreach my $span(@spans) {
-		my ($cls) = $span =~ /<span class="(.*?)">.*?<\/span>/i;
-		if ($cls && $cont_css =~ /$cls/i) {
-			$span =~ s|<span class=".*?">.*?</span>$||i;
-		}
-		else {
-			$span =~ s|<span class=".*?">||i;
-			$span =~ s|</span>||i;
-		} 
-		$rank .= $span;
-	}
-	
-	return $rank;
+  foreach my $span(@spans) {
+    my ($cls) = $span =~ /<span class="(.*?)">.*?<\/span>/i;
+    if ($cls && $cont_css =~ /$cls/i) {
+      $span =~ s|<span class=".*?">.*?</span>$||i;
+    }
+    else {
+      $span =~ s|<span class=".*?">||i;
+      $span =~ s|</span>||i;
+    }
+    $rank .= $span;
+  }
+
+  return $rank;
 }
 
 1;
@@ -108,7 +108,7 @@ The following options correspond to attribute methods described below:
   proxy                   undef
   timeout                 undef
 
-C<agent> specifies the header 'User-Agent' when querying Alexa.  If
+C<agent> specifies the header 'User-Agent' when querying Alexa. If
 the C<proxy> option is passed in, requests will be made through
 specified poxy. C<proxy> is the host which serve requests to Alexa.
 
@@ -132,9 +132,10 @@ If you find any, please report ;)
 
 =head1 AUTHOR
 
-Alex S. Danoff   F<E<lt>root@guruperl.netE<gt>>.
-                 http://www.guruperl.net/
-                 icq: 10608
+Alex S. Danoff
+  F<E<lt>root@guruperl.netE<gt>>.
+  http://www.guruperl.net/
+  icq: 10608
 
 =head1 COPYRIGHT
 
