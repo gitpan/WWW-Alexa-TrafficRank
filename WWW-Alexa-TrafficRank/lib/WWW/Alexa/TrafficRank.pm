@@ -5,7 +5,7 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.0';
+$VERSION = '1.2';
 
 sub new
 {
@@ -13,7 +13,7 @@ sub new
   my %par = @_;
   my $self;
   
-  $self->{ua} = LWP::UserAgent->new(agent => $par{agent} || 'Opera 9.5') or return;
+  $self->{ua} = LWP::UserAgent->new(agent => $par{agent} || 'Opera 9.6') or return;
   $self->{ua}->proxy('http', $par{proxy}) if $par{proxy};
   $self->{ua}->timeout($par{timeout}) if $par{timeout};
 
@@ -23,47 +23,18 @@ sub new
 sub get 
 {
   my ($self, $domain) = @_;
+
   return unless defined $domain;
 
-  my ($res, $cont);
-
+  $domain =~ s|http://||i;
   $domain =~ s/^\w+\.(.*?\.\w+)/$1/;
 
-  $res = $self->{ua}->get("http://www.alexa.com/data/details/main/$domain");
-  if (!$res->is_success) {
-    return $res->status_line;
-  }
+  my $res = $self->{ua}->get("http://www.alexa.com/siteinfo/$domain");
+  return $res->status_line if !$res->is_success;
 
-  $cont = $res->content; $cont =~ s/[\r\n]//g;
+  my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-  if ($cont =~ /traffic rank of:<\/span>&nbsp;No Data/i) {
-    return "No Data";
-  }
-
-  $res = $self->{ua}->get("http://client.alexa.com/common/css/scramble.css");
-  if (!$res->is_success) {
-    return $res->status_line;
-  }
-
-  my $cont_css = $res->content; $cont_css =~ s/[\r\n]//g;
-
-  my ($rank) = $cont =~ /traffic rank of:<\/span>&nbsp;<a href="\/data\/details\/traffic_details\/$domain">(.*?)<\/a>/i;
-     $rank =~ s|<!--.*?-->||g;
-     $rank =~ s|<span class="descBold">||g;
-     $rank =~ s|</span>|</span>\n|gi;
-  my @spans = split(/\n/, $rank); $rank='';
-
-  foreach my $span(@spans) {
-    my ($cls) = $span =~ /<span class="(.*?)">.*?<\/span>/i;
-    if ($cls && $cont_css =~ /$cls/i) {
-      $span =~ s|<span class=".*?">.*?</span>$||i;
-    }
-    else {
-      $span =~ s|<span class=".*?">||i;
-      $span =~ s|</span>||i;
-    }
-    $rank .= $span;
-  }
+  my ($rank) = $cont =~ /<div class="data up">(.*?)</i;
 
   return $rank;
 }
@@ -104,7 +75,7 @@ The following options correspond to attribute methods described below:
 
   KEY                     DEFAULT
   -----------             --------------------
-  agent                   "Opera 9.5"
+  agent                   "Opera 9.6"
   proxy                   undef
   timeout                 undef
 
@@ -132,14 +103,13 @@ If you find any, please report ;)
 
 =head1 AUTHOR
 
-Alex S. Danoff
+Alex Danoff
   F<E<lt>root@guruperl.netE<gt>>.
   http://www.guruperl.net/
-  icq: 10608
 
 =head1 COPYRIGHT
 
-Copyright 2008, Alex S. Danoff, All Rights Reserved.
+Copyright 2009, Alex Danoff, All Rights Reserved.
 
 You may use, modify, and distribute this package under the
 same terms as Perl itself.
