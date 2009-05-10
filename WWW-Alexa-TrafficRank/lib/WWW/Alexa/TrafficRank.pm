@@ -5,7 +5,7 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.2';
+$VERSION = '1.3';
 
 sub new
 {
@@ -17,7 +17,7 @@ sub new
   $self->{ua}->proxy('http', $par{proxy}) if $par{proxy};
   $self->{ua}->timeout($par{timeout}) if $par{timeout};
 
-  bless($self, $class);
+  bless ($self, $class);
 }
 
 sub get 
@@ -26,15 +26,12 @@ sub get
 
   return unless defined $domain;
 
-  $domain =~ s|http://||i;
-  $domain =~ s/^\w+\.(.*?\.\w+)/$1/;
-
   my $res = $self->{ua}->get("http://www.alexa.com/siteinfo/$domain");
   return $res->status_line if !$res->is_success;
 
   my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-  my ($rank) = $cont =~ /<div class="data up">(.*?)</i;
+  my ($_, $rank) = $cont =~ /<div class="data (up|down)">(.*?)</i;
 
   return $rank;
 }
@@ -103,13 +100,13 @@ If you find any, please report ;)
 
 =head1 AUTHOR
 
-Alex Danoff
+Guruperl.net
   F<E<lt>root@guruperl.netE<gt>>.
   http://www.guruperl.net/
 
 =head1 COPYRIGHT
 
-Copyright 2009, Alex Danoff, All Rights Reserved.
+Copyright 2009, Guruperl.net, All Rights Reserved.
 
 You may use, modify, and distribute this package under the
 same terms as Perl itself.
