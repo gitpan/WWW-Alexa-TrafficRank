@@ -1,6 +1,14 @@
+2009-06-08      Guruperl.net <root@guruperl.net>
+
+	Release 1.4
+
+	Added get_country_rank() method
+	Thanks to Evan Harris <spanner@ihug.co.nz>
+
+
 2009-05-10      Guruperl.net <root@guruperl.net>
 
-	Release 1.2
+	Release 1.3
 
 	Added Changes to distribution
 	Thanks to Lucas Mateus
@@ -14,7 +22,7 @@
 	Added Changes to distribution
 
 
-2007-08-28      Guruperl.net <root@guruperl.net>
+2008-08-28      Guruperl.net <root@guruperl.net>
 
 	Release 1.0
 

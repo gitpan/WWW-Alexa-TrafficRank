@@ -5,35 +5,65 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.3';
+$VERSION = '1.4';
 
 sub new
 {
-  my $class = shift;
-  my %par = @_;
-  my $self;
+    my $class = shift;
+    my %par = @_;
+    my $self;
   
-  $self->{ua} = LWP::UserAgent->new(agent => $par{agent} || 'Opera 9.6') or return;
-  $self->{ua}->proxy('http', $par{proxy}) if $par{proxy};
-  $self->{ua}->timeout($par{timeout}) if $par{timeout};
+    $self->{ua} = LWP::UserAgent->new(agent => $par{agent} || 'Opera 10.0') or return;
+    $self->{ua}->proxy('http', $par{proxy}) if $par{proxy};
+    $self->{ua}->timeout($par{timeout})     if $par{timeout};
 
-  bless ($self, $class);
+    bless ($self, $class);
 }
 
 sub get 
 {
-  my ($self, $domain) = @_;
+    my ($self, $domain) = @_;
 
-  return unless defined $domain;
+    return unless defined $domain;
 
-  my $res = $self->{ua}->get("http://www.alexa.com/siteinfo/$domain");
-  return $res->status_line if !$res->is_success;
+    my $res = $self->{ua}->get("http://www.alexa.com/siteinfo/$domain");
+    return $res->status_line if !$res->is_success;
 
-  my $cont = $res->content; $cont =~ s/[\r\n]//g;
+    my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-  my ($_, $rank) = $cont =~ /<div class="data (up|down)">(.*?)</i;
+    my ($updown, $rank) = $cont =~ /<div class="data (up|down)">(.*?)</i;
 
-  return $rank;
+    return $rank;
+}
+
+sub get_country_rank
+{
+    my $self = shift;
+    my $par  = { @_ };
+
+    return unless defined $par->{Domain};
+    return unless defined $par->{Country};
+
+    my $res = $self->{ua}->get("http://www.alexa.com/siteinfo/$par->{Domain}");
+    return $res->status_line if !$res->is_success;
+
+    my $cont = $res->content; $cont =~ s/[\r\n]//g;
+
+    return 0 unless $cont =~ /traffic rank in other countries(.+?)<\/ul>/gs;
+  
+    my $listdata = $1;
+
+    while ( $listdata =~ /<li class="geo_percentages">(.+?)<\/li>/igs ) {
+        my $item = $1;
+
+        if ( $item =~ /$par->{Country}/gs ) {
+            my ($rank) = $item =~ /<span class="geo_number descbold">(.*?)</i;
+
+            return $rank;
+        }
+    }
+  
+    return 0;
 }
 
 1;
@@ -46,9 +76,14 @@ WWW::Alexa::TrafficRank - Query Alexa.com Traffic Rank of website.
 
 =head1 SYNOPSIS
 
- use WWW::Alexa::TrafficRank;
- my $tr = WWW::Alexa::TrafficRank->new;
- print $tr->get('guruperl.net');
+use WWW::Alexa::TrafficRank;
+ 
+my $tr = WWW::Alexa::TrafficRank->new();
+ 
+my $rank = $tr->get('guruperl.net');
+my $country_rank = $tr->get_country_rank(Domain => 'guruperl.net', Country => 'United States');
+ 
+print $rank, "\n", $country_rank;
 
 =head1 DESCRIPTION
 
@@ -72,7 +107,7 @@ The following options correspond to attribute methods described below:
 
   KEY                     DEFAULT
   -----------             --------------------
-  agent                   "Opera 9.6"
+  agent                   "Opera 10.0"
   proxy                   undef
   timeout                 undef
 
@@ -89,8 +124,14 @@ specified poxy. C<proxy> is the host which serve requests to Alexa.
 =item  $rank = $tr->get('guruperl.net');
 
 Queries Alexa for a specified traffic rank URL and returns traffic rank
-text value. If query fails for some reason (alexa unreachable, undefined 
+text value. If query fails for some reason (Alexa unreachable, undefined 
 url passed) it return error string.
+
+=item  $country_rank = $tr->get_country_rank(Domain => 'guruperl.net', Country => 'United States');
+
+Extract the rank in the country. If we get a match on the country name in 
+the item then extract the ranking value and return. The country name must match the name 
+of the country as displayed on the Alexa page.
 
 =back
 
