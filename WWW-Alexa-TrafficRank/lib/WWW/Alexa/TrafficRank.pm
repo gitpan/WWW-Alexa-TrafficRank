@@ -5,7 +5,7 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.4';
+$VERSION = '1.5';
 
 sub new
 {
@@ -31,7 +31,7 @@ sub get
 
     my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-    my ($updown, $rank) = $cont =~ /<div class="data (up|down)">(.*?)</i;
+    my ($updown, $rank) = $cont =~ /<div class="data (up|down|steady)"><img.*?\/>\s+([\d,]+)<\//i;
 
     return $rank;
 }
@@ -49,7 +49,7 @@ sub get_country_rank
 
     my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-    return 0 unless $cont =~ /traffic rank in other countries(.+?)<\/ul>/gs;
+    return 0 unless $cont =~ /is ranked around the world(.+?)<\/ul>/gs;
   
     my $listdata = $1;
 
@@ -57,7 +57,7 @@ sub get_country_rank
         my $item = $1;
 
         if ( $item =~ /$par->{Country}/gs ) {
-            my ($rank) = $item =~ /<span class="geo_number descbold">(.*?)</i;
+            my ($rank) = $item =~ /<span class="geo_number descbold">([\d,]+)</i;
 
             return $rank;
         }
