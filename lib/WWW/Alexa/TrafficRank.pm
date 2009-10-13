@@ -5,7 +5,7 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.5';
+$VERSION = '1.6';
 
 sub new
 {
