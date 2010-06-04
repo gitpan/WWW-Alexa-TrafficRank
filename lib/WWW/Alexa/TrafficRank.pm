@@ -5,7 +5,7 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.6';
+$VERSION = '1.7';
 
 sub new
 {
@@ -31,7 +31,7 @@ sub get
 
     my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-    my ($updown, $rank) = $cont =~ /<div class="data (up|down|steady)"><img.*?\/>\s+([\d,]+)<\//i;
+    my ($updown, $rank) = $cont =~ /<div class="data (up|down|steady)"><img.*?\/>\s?([\d,]+)/i;
 
     return $rank;
 }
@@ -49,17 +49,18 @@ sub get_country_rank
 
     my $cont = $res->content; $cont =~ s/[\r\n]//g;
 
-    return 0 unless $cont =~ /is ranked around the world(.+?)<\/ul>/gs;
+    return 0 unless $cont =~ /<div class="content1" id="traffic-rank-by-country">(.+?)<div class="content1" id="where-visitors-go"/gs;
   
     my $listdata = $1;
 
-    while ( $listdata =~ /<li class="geo_percentages">(.+?)<\/li>/igs ) {
+    while ( $listdata =~ /<div class="tr1.*?">(.+?)<\/div>/igs ) {
         my $item = $1;
 
         if ( $item =~ /$par->{Country}/gs ) {
-            my ($rank) = $item =~ /<span class="geo_number descbold">([\d,]+)</i;
 
-            return $rank;
+            $item =~ /<p class="tc1" style=".*?">([\d,]+)/i;
+
+            return $1;
         }
     }
   
@@ -143,11 +144,14 @@ If you find any, please report ;)
 
 Guruperl.net
   F<E<lt>root@guruperl.netE<gt>>.
-  http://www.guruperl.net/
+  
+  http://getabest.com/ - Software Downloads
+  
+  http://guruperl.net/ - Professional Scripts
 
 =head1 COPYRIGHT
 
-Copyright 2009, Guruperl.net, All Rights Reserved.
+Copyright 2010, Guruperl.net, All Rights Reserved.
 
 You may use, modify, and distribute this package under the
 same terms as Perl itself.
