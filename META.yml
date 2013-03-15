@@ -1,7 +1,17 @@
-name:         WWW-Alexa-TrafficRank
-version:      1.7
-version_from: lib/WWW/Alexa/TrafficRank.pm
-installdirs:  site
-requires:     LWP::UserAgent:                0
+---
+abstract: 'Query Alexa.com Traffic Rank of website.'
+author:
+  - 'Alex Zhdanau <guruperl@cpan.org>'
+build_requires:
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.30'
+license: perl
+installdirs: site
 distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.30
+name: WWW-Alexa-TrafficRank
+requires:
+  LWP::UserAgent: 0
+version: 1.8

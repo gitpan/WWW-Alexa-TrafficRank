@@ -8,7 +8,7 @@ BEGIN { plan tests => 1 }
 use WWW::Alexa::TrafficRank; 
 my $tr = WWW::Alexa::TrafficRank->new();
 
-my $rank = $tr->get('guruperl.net');
+my $rank = $tr->get('filedir.com');
 
 ok($rank);
 
