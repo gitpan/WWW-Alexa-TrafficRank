@@ -5,7 +5,7 @@ use warnings;
 use vars qw($VERSION);
 use LWP::UserAgent;
 
-$VERSION = '1.8';
+$VERSION = '1.9';
 
 sub new
 {
@@ -141,8 +141,6 @@ If you find any, please report ;)
 
 Alex Zhdanau
   F<E<lt>guruperl@cpan.orgE<gt>>.
-  
-  http://FileDir.com - All of your downloads in one place.
   
 =head1 COPYRIGHT
 
