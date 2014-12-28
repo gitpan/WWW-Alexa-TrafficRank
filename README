@@ -11,9 +11,7 @@ Installation is simple:
   make test
   make install
 
-If you have questions mail to root@guruperl.net.
-
-Copyright 2013, Alex Zhdanau, All Rights Reserved.
+Copyright 2014, Alex Zhdanau, All Rights Reserved.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

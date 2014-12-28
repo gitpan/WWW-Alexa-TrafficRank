@@ -14,4 +14,4 @@ distribution_type: module
 name: WWW-Alexa-TrafficRank
 requires:
   LWP::UserAgent: 0
-version: 1.9
+version: 1.10
